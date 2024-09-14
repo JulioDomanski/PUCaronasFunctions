@@ -20,7 +20,3 @@ az storage account create --name $StorageAccountName --location $Location --reso
 
 # Create function app
 az functionapp create --resource-group $ResourceGroupName --consumption-plan-location $Location --runtime python --runtime-version 3.10 --functions-version 4 --name $FunctionAppName --os-type linux --storage-account $StorageAccountName
-
-
-# To delete the resource group and all resources in it
-# az group delete --name rgmyfunc1
