@@ -4,8 +4,8 @@ from bson.objectid import ObjectId
 from pymongo import MongoClient
 from azure.servicebus import ServiceBusClient, ServiceBusMessage
 
-SERVICE_BUS_CONNECTION_STRING = "Endpoint=sb://pucarona.servicebus.windows.net/;SharedAccessKeyName=Publisher;SharedAccessKey=MLFWPuR0PCyh9ZngTQU3iAnbL+GM32RVK+ASbIlyG8k=;EntityPath=pucaronaqueue"
-SERVICE_BUS_QUEUE_NAME = "pucaronaqueue"
+SERVICE_BUS_CONNECTION_STRING = "******"
+SERVICE_BUS_QUEUE_NAME = "******"
 
 
 app = func.FunctionApp()
