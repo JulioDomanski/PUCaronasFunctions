@@ -2,6 +2,11 @@ import azure.functions as func
 import json
 from bson.objectid import ObjectId
 from pymongo import MongoClient
+from azure.servicebus import ServiceBusClient, ServiceBusMessage
+
+SERVICE_BUS_CONNECTION_STRING = "Endpoint=sb://pucarona.servicebus.windows.net/;SharedAccessKeyName=Publisher;SharedAccessKey=MLFWPuR0PCyh9ZngTQU3iAnbL+GM32RVK+ASbIlyG8k=;EntityPath=pucaronaqueue"
+SERVICE_BUS_QUEUE_NAME = "pucaronaqueue"
+
 
 app = func.FunctionApp()
 
@@ -74,6 +79,65 @@ def get_usuario(req: func.HttpRequest) -> func.HttpResponse:
             mimetype="application/json"
         )
 
+@app.function_name('VERusuario')
+@app.route(route="verificaUsuario", methods=['POST'])
+def verifica_tipo_usuario(req: func.HttpRequest) -> func.HttpResponse:
+
+    body = req.get_json()
+    id_usuario = body["id_usuario"]
+    user = collection.find_one({"_id": ObjectId(id_usuario)})
+
+    if user:
+        user['_id'] = str(user['_id']) 
+        tipo_usuario = user.get("tipo_usuario", "").lower()
+        if tipo_usuario == "aluno":
+
+            servicebus_client = ServiceBusClient.from_connection_string(SERVICE_BUS_CONNECTION_STRING)
+            body["http_code"] = "200"
+            message_content = json.dumps(body)
+
+            with servicebus_client.get_queue_sender(SERVICE_BUS_QUEUE_NAME) as sender:
+                message = ServiceBusMessage(message_content)
+                sender.send_messages(message)
+
+            return func.HttpResponse(
+                json.dumps(body),
+                status_code=200,
+                mimetype="application/json"
+            )
+        else:
+            error_message = {
+                "http_code": "401",
+                "message": f"O usuario nao eh Aluno."
+            }
+            servicebus_client = ServiceBusClient.from_connection_string(SERVICE_BUS_CONNECTION_STRING)
+            message_content = json.dumps(error_message)
+
+            with servicebus_client.get_queue_sender(SERVICE_BUS_QUEUE_NAME) as sender:
+                message = ServiceBusMessage(message_content)
+                sender.send_messages(message)
+
+            return func.HttpResponse(
+                json.dumps(error_message),
+                status_code=401,
+                mimetype="application/json"
+            )
+    else:
+        error_message = {
+            "http_code": "404",
+            "message": "Usuario nao encontrado."
+        }
+        servicebus_client = ServiceBusClient.from_connection_string(SERVICE_BUS_CONNECTION_STRING)
+        message_content = json.dumps(error_message)
+
+        with servicebus_client.get_queue_sender(SERVICE_BUS_QUEUE_NAME) as sender:
+            message = ServiceBusMessage(message_content)
+            sender.send_messages(message)
+        return func.HttpResponse(
+                json.dumps(error_message),
+                status_code=400,
+                mimetype="application/json"
+            )
 
 @app.function_name('PUTusuario')
 @app.route(route="atualizarUsuario", methods=['PUT'])
