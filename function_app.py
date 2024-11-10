@@ -4,13 +4,13 @@ from bson.objectid import ObjectId
 from pymongo import MongoClient
 from azure.servicebus import ServiceBusClient, ServiceBusMessage
 
-SERVICE_BUS_CONNECTION_STRING = "******"
-SERVICE_BUS_QUEUE_NAME = "******"
+SERVICE_BUS_CONNECTION_STRING = "Endpoint=sb://pucarona.servicebus.windows.net/;SharedAccessKeyName=Publisher;SharedAccessKey=MLFWPuR0PCyh9ZngTQU3iAnbL+GM32RVK+ASbIlyG8k=;EntityPath=pucaronaqueue"
+SERVICE_BUS_QUEUE_NAME = "pucaronaqueue"
 
 
 app = func.FunctionApp()
 
-client = MongoClient("mongodb+srv://juliodomanski:<PASSWORD>@pjbl-pucarona.whh8x.mongodb.net/?retryWrites=true&w=majority&appName=PJBL-PUCARONA")
+client = MongoClient("mongodb+srv://juliodomanski:porra123@pjbl-pucarona.whh8x.mongodb.net/?retryWrites=true&w=majority&appName=PJBL-PUCARONA")
 db = client.get_database("PUCaronas")
 collection = db.get_collection("usuarios")
 
